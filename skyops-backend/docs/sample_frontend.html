@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkyOps — Aviation Operations Console (Sample Reference UI)</title>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --surface: #151c2e;
+      --surface-border: #222d45;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-hover: #0284c7;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --card-bg: #1e293b;
+      --radius: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      padding: 24px;
+      line-height: 1.5;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--surface-border);
+      margin-bottom: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: -0.5px;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      color: var(--accent);
+    }
+
+    .backend-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--danger);
+      transition: background 0.3s;
+    }
+
+    .status-dot.online {
+      background: var(--success);
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    button {
+      background: var(--accent);
+      color: #0b0f19;
+      font-weight: 600;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: var(--accent-hover);
+    }
+
+    button.secondary {
+      background: var(--surface-border);
+      color: var(--text-main);
+    }
+
+    button.secondary:hover {
+      background: #334155;
+    }
+
+    .item-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 280px;
+      overflow-y: auto;
+    }
+
+    .item {
+      background: var(--card-bg);
+      border: 1px solid var(--surface-border);
+      padding: 12px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
+    }
+
+    .item-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    input, select {
+      background: var(--card-bg);
+      border: 1px solid var(--surface-border);
+      color: var(--text-main);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+    }
+
+    input:focus, select:focus {
+      outline: 1px solid var(--accent);
+    }
+
+    .result-box {
+      background: var(--card-bg);
+      border: 1px solid var(--surface-border);
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      min-height: 50px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .pill-green {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .pill-red {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .pill-blue {
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <h1>SkyOps</h1>
+      <span class="badge">Backend Reference UI</span>
+    </div>
+    <div class="backend-status">
+      <div id="statusDot" class="status-dot"></div>
+      <span id="statusText">Connecting to backend (http://localhost:8000)...</span>
+    </div>
+  </header>
+
+  <div class="grid">
+    <!-- Card 1: Airports & Weather -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Airports & Live Weather</h2>
+        <button onclick="fetchAirports()">Refresh</button>
+      </div>
+      <div id="airportsList" class="item-list">
+        <div style="color: var(--text-muted); font-size: 0.85rem;">Click 'Refresh' to load aerodromes...</div>
+      </div>
+      <div id="weatherResult" class="result-box" style="display: none;"></div>
+    </div>
+
+    <!-- Card 2: Flights & Turnarounds -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Flight Operations & Rotations</h2>
+        <button onclick="fetchFlights()">Refresh</button>
+      </div>
+      <div id="flightsList" class="item-list">
+        <div style="color: var(--text-muted); font-size: 0.85rem;">Click 'Refresh' to load flights...</div>
+      </div>
+      <div id="turnaroundResult" class="result-box" style="display: none;"></div>
+    </div>
+
+    <!-- Card 3: Gate Conflict Checker -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Gate Availability & Conflict Checker</h2>
+      </div>
+      <div class="form-group">
+        <label for="gateSelect">Gate ID</label>
+        <select id="gateSelect">
+          <option value="gate-rtm-g01">Rotterdam Gate G01 (Narrow Body)</option>
+          <option value="gate-rtm-g02">Rotterdam Gate G02 (Wide Body)</option>
+          <option value="gate-rtm-g03">Rotterdam Gate G03 (Regional - Inactive)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="aircraftSize">Aircraft Size Category</label>
+        <select id="aircraftSize">
+          <option value="REGIONAL">REGIONAL</option>
+          <option value="NARROW_BODY" selected>NARROW_BODY</option>
+          <option value="WIDE_BODY">WIDE_BODY</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="minutesOffset">Requested Time Offset</label>
+        <select id="minutesOffset">
+          <option value="conflict">During Occupied Window (Triggers Conflict on G01)</option>
+          <option value="free">5 Hours Later (Free Window)</option>
+        </select>
+      </div>
+      <button onclick="checkGateAvailability()">Test Gate Conflict Algorithm</button>
+      <div id="conflictResult" class="result-box" style="display: none;"></div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = "http://localhost:8000";
+
+    // 1. Health & Connection Check
+    async function checkHealth() {
+      const dot = document.getElementById("statusDot");
+      const text = document.getElementById("statusText");
+      try {
+        const res = await fetch(`${API_BASE}/api/v1/health/`);
+        if (res.ok) {
+          const data = await res.json();
+          dot.classList.add("online");
+          text.innerText = `Backend Online (${data.service})`;
+        } else {
+          throw new Error("HTTP " + res.status);
+        }
+      } catch (err) {
+        dot.classList.remove("online");
+        text.innerText = `Backend Offline: Make sure 'uvicorn' is running on port 8000`;
+      }
+    }
+
+    // 2. Fetch Airports
+    async function fetchAirports() {
+      const list = document.getElementById("airportsList");
+      list.innerHTML = `<div style="color: var(--text-muted);">Loading aerodromes...</div>`;
+      try {
+        const res = await fetch(`${API_BASE}/api/v1/airports/`);
+        const data = await res.json();
+        list.innerHTML = "";
+        data.forEach(airport => {
+          const div = document.createElement("div");
+          div.className = "item";
+          div.innerHTML = `
+            <div>
+              <strong>${airport.name} (${airport.iata_code})</strong>
+              <div class="item-sub">${airport.city}, ${airport.country} • ${airport.timezone}</div>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <button class="secondary" onclick="viewWeather('${airport.id}', '${airport.iata_code}')">Weather</button>
+              <button class="secondary" onclick="viewGates('${airport.id}', '${airport.iata_code}')">Gates</button>
+            </div>
+          `;
+          list.appendChild(div);
+        });
+      } catch (err) {
+        list.innerHTML = `<div style="color: var(--danger);">Failed to load airports: ${err.message}</div>`;
+      }
+    }
+
+    // 3. View Live Weather for Airport
+    async function viewWeather(airportId, iata) {
+      const box = document.getElementById("weatherResult");
+      box.style.display = "block";
+      box.innerText = `Fetching live Open-Meteo surface weather for ${iata}...`;
+      try {
+        const res = await fetch(`${API_BASE}/api/v1/weather/airport/${airportId}`);
+        const data = await res.json();
+        box.innerHTML = `<strong>Live Surface Weather for ${iata} (${data.source}):</strong>
+• Temperature: <strong>${data.temperature_c ?? 'N/A'} °C</strong>
+• Visibility: <strong>${data.visibility_km ?? 'N/A'} km</strong>
+• Wind Speed: <strong>${data.wind_speed_mps ?? 'N/A'} m/s</strong>
+• Rain / Precipitation: <strong>${data.rain_mm ?? 0} mm</strong>
+• Cloud Cover: <strong>${data.cloud_cover_pct ?? 'N/A'}%</strong>
+• Observation Time: <strong>${data.observed_at}</strong>`;
+      } catch (err) {
+        box.innerText = `Error loading weather: ${err.message}`;
+      }
+    }
+
+    // 4. View Gates for Airport
+    async function viewGates(airportId, iata) {
+      const box = document.getElementById("weatherResult");
+      box.style.display = "block";
+      box.innerText = `Fetching gates for ${iata}...`;
+      try {
+        const res = await fetch(`${API_BASE}/api/v1/airports/${airportId}/gates`);
+        const data = await res.json();
+        box.innerHTML = `<strong>Active Gates at ${iata}:</strong>\n` +
+          data.map(g => `• <strong>${g.gate_code}</strong> (${g.terminal}) — Limit: ${g.aircraft_size_limit}`).join("\n");
+      } catch (err) {
+        box.innerText = `Error loading gates: ${err.message}`;
+      }
+    }
+
+    // 5. Fetch Flights
+    async function fetchFlights() {
+      const list = document.getElementById("flightsList");
+      list.innerHTML = `<div style="color: var(--text-muted);">Loading flights...</div>`;
+      try {
+        const res = await fetch(`${API_BASE}/api/v1/flights/`);
+        const data = await res.json();
+        list.innerHTML = "";
+        data.forEach(flight => {
+          const div = document.createElement("div");
+          div.className = "item";
+          div.innerHTML = `
+            <div>
+              <strong>${flight.flight_number}</strong> (${flight.airline_code})
+              <div class="item-sub">Tail: <strong>${flight.aircraft_id || 'N/A'}</strong> • Status: <span class="pill-blue">${flight.status}</span></div>
+            </div>
+            <button onclick="checkTurnaround('${flight.id}', '${flight.flight_number}')">Check Turnaround</button>
+          `;
+          list.appendChild(div);
+        });
+      } catch (err) {
+        list.innerHTML = `<div style="color: var(--danger);">Failed to load flights: ${err.message}</div>`;
+      }
+    }
+
+    // 6. Check Turnaround Pairing
+    async function checkTurnaround(flightId, flightNumber) {
+      const box = document.getElementById("turnaroundResult");
+      box.style.display = "block";
+      box.innerText = `Analyzing turnaround rotation for ${flightNumber}...`;
+      try {
+        const res = await fetch(`${API_BASE}/api/v1/flights/${flightId}/turnaround`);
+        const data = await res.json();
+        const feasiblePill = data.is_feasible ? `<span class="pill-green">FEASIBLE</span>` : `<span class="pill-red">UNFEASIBLE</span>`;
+        box.innerHTML = `<strong>Turnaround Pairing Result for ${flightNumber}:</strong>
+• Status: <strong>${data.status}</strong>
+• Aircraft Tail: <strong>${data.aircraft_id || 'None'}</strong>
+• Paired Outbound Leg: <strong>${data.departing_flight_number || 'No subsequent leg'}</strong>
+• Available Ground Buffer: <strong>${data.turnaround_buffer_minutes ?? 'N/A'} minutes</strong>
+• Minimum Required: <strong>${data.minimum_required_minutes} minutes</strong>
+• Feasibility: ${feasiblePill}`;
+      } catch (err) {
+        box.innerText = `Error analyzing turnaround: ${err.message}`;
+      }
+    }
+
+    // 7. Check Gate Availability
+    async function checkGateAvailability() {
+      const box = document.getElementById("conflictResult");
+      box.style.display = "block";
+      const gateId = document.getElementById("gateSelect").value;
+      const aircraftSize = document.getElementById("aircraftSize").value;
+      const mode = document.getElementById("minutesOffset").value;
+
+      const now = new Date();
+      let startTime, endTime;
+      if (mode === "conflict") {
+        startTime = now.toISOString();
+        endTime = new Date(now.getTime() + 45 * 60000).toISOString();
+      } else {
+        startTime = new Date(now.getTime() + 5 * 3600000).toISOString();
+        endTime = new Date(now.getTime() + 6 * 3600000).toISOString();
+      }
+
+      box.innerText = "Evaluating gate availability and operational conflicts...";
+
+      try {
+        const res = await fetch(`${API_BASE}/api/v1/gates/check-availability`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            gate_id: gateId,
+            aircraft_size: aircraftSize,
+            start_time: startTime,
+            end_time: endTime
+          })
+        });
+        const data = await res.json();
+        const availablePill = data.is_available ? `<span class="pill-green">AVAILABLE</span>` : `<span class="pill-red">CONFLICT DETECTED</span>`;
+        box.innerHTML = `<strong>Conflict Evaluation Result:</strong>
+• Verdict: ${availablePill}
+• Size Compatible: <strong>${data.is_compatible}</strong>
+• Interval Conflict: <strong>${data.has_conflict}</strong>
+• Conflicting Flights: <strong>${data.conflicting_flight_ids.join(', ') || 'None'}</strong>
+• Explanation: <em>${data.reason}</em>`;
+      } catch (err) {
+        box.innerText = `Error checking gate: ${err.message}`;
+      }
+    }
+
+    // Initial check
+    checkHealth();
+  </script>
+</body>
+</html>
+
